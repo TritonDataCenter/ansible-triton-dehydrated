@@ -1,0 +1,15 @@
+# This Source Code Form is subject to the terms of the Mozilla Public
+# License, v. 2.0. If a copy of the MPL was not distributed with this
+# file, You can obtain one at https://mozilla.org/MPL/2.0/.
+
+# Copyright 2021 Joyent, Inc.
+
+KEY_ALGO=rsa
+CERTDIR=/opt/ssl
+prod_ca="https://acme-v02.api.letsencrypt.org/directory"
+staging_ca="https://acme-staging-v02.api.letsencrypt.org/directory"
+CA={{ __letsencrypt.ca }}
+CONTACT_EMAIL={{ __letsencrypt.contact }}
+OWNER={{ __letsencrypt.owner }}
+SERVICES=( {{ __letsencrypt.restart_services | join(' ') }} )
+WELLKNOWN={{ __letsencrypt.well_known }}

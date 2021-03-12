@@ -1,0 +1,81 @@
+---
+# tasks file for triton-dehydrated
+
+- name: Combine vars
+  set_fact:
+    __letsencrypt: "{{ le_default | combine(letsencrypt) }}"
+
+- name: Directories exist
+  file:
+    path: "{{ item }}"
+    state: directory
+    mode: "0755"
+  loop:
+    - "{{ __letsencrypt.certdir }}"
+    - "{{ __letsencrypt.well_known }}"
+    - /opt/triton-dehydrated
+
+- name: dehydrated install
+  unarchive:
+    src: "{{ triton_dehydrated_download_url }}"
+    dest: /opt/triton-dehydrated
+    creates: /opt/triton-dehydrated/dehydrated
+    remote_src: true
+
+- name: domains
+  template:
+    dest: /opt/triton-dehydrated/domains.txt
+    src: templates/domains.j2
+    owner: root
+    group: root
+    mode: "0644"
+  when: __letsencrypt.domains|length > 0
+
+- name: ecdsa domains
+  template:
+    dest: /opt/triton-dehydrated/domains.ecdsa.txt
+    src: templates/ecdsa_domains.j2
+    owner: root
+    group: root
+    mode: "0644"
+  when: __letsencrypt.ecdsa_domains|length > 0
+
+- name: Custom config
+  template:
+    dest: /opt/triton-dehydrated/config.overrides
+    src: templates/config.j2
+    owner: root
+    group: root
+    mode: "0644"
+
+- name: Override hook
+  copy:
+    dest: /opt/triton-dehydrated/override-hook
+    src: files/override-hook
+    owner: root
+    group: root
+    mode: "0644"
+
+- name: issue certificates
+  shell: |
+    /opt/triton-dehydrated/dehydrated --register --accept-terms
+    /opt/triton-dehydrated/dehydrated -c -o /opt/ssl 2>&1 >> /var/log/triton-dehydrated.log
+  args:
+    chdir: /opt/ssl
+    creates: "/opt/ssl/{{ __letsencrypt.domains[0].split(' ')[0] }}/cert.pem"
+
+- name: cron job renew rsa certificates
+  cron:
+    job: PATH=/opt/local/sbin:/opt/local/bin:/usr/sbin:/usr/bin:/sbin /opt/triton-dehydrated/dehydrated -c -o /opt/ssl 2>&1 >> /var/log/triton-dehydrated.log
+    name: renew_certificates
+    minute: "0"
+    hour: "3"
+  when: __letsencrypt.domains|length > 0
+
+- name: cron job renew ecdsa certificates
+  cron:
+    job: /opt/triton-dehydrated/dehydrated -c -f config.ecdsa -o /opt/ssl 2>&1 >> /var/log/triton-dehydrated.log
+    name: renew_ecdsa_certificates
+    minute: "10"
+    hour: "3"
+  when: __letsencrypt.ecdsa_domains|length > 0
