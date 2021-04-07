@@ -23,10 +23,10 @@ galaxy_info:
     - name: Alpine
       versions:
         - all
-    - name: CentOS
+    - name: Debian
       versions:
         - all
-    - name: Debian
+    - name: EL
       versions:
         - all
     - name: Fedora
@@ -35,19 +35,13 @@ galaxy_info:
     - name: FreeBSD
       versions:
         - all
-    - name: NetBSD
-      versions:
-        - all
-    - name: OpenBSD
-      versions:
-        - all
     - name: SmartOS
       versions:
         - all
     - name: Ubuntu
       versions:
         - all
-    - name: Void
+    - name: Void Linux
       versions:
         - all
 
