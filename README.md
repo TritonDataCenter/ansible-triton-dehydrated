@@ -1,5 +1,4 @@
-triton-dehydrated
-=================
+# triton-dehydrated
 
 An ansible playbook to install and configure [triton-dehydrated][td] to generate
 [Let's Encrypt][le] certificates.
@@ -7,11 +6,13 @@ An ansible playbook to install and configure [triton-dehydrated][td] to generate
 [td]: https://github.com/joyent/triton-dehydrated
 [le]: https://www.letsencrypt.org/
 
-Requirements
-------------
+## Requirements
 
-This playbook will only work on virtual instances created in [Triton][t]. The
-Triton Datacenter must have [CNS][cns] configured and be globally resolvable.
+This playbook will only work on virtual instances created in [Triton][t]. Any
+image provided by Joyent should reasonably be expected to work.
+
+The Triton Datacenter must have [CNS][cns] configured and be globally
+resolvable.
 
 The [triton-ansible-inventory][tai] module may also be helpful, but is not
 required.
@@ -20,31 +21,52 @@ required.
 [cns]: https://github.com/joyent/triton-cns
 [tai]: https://github.com/joyent/triton-ansible-inventory
 
-Role Variables
---------------
+## Role Variables
 
-A description of the settable variables for this role should go here, including any variables that are in defaults/main.yml, vars/main.yml, and any variables that can/should be set via parameters to the role. Any variables that are read from other roles and/or the global scope (ie. hostvars, group vars, etc.) should be mentioned here as well.
+This role requires a `letsencrypt` object that supports the following
+properties. Any properties may be ommitted and a suitable default will be used.
+At least one of `domains`, `suffix_domains`, `ecesa_domains`,
+`ecdsa_suffix_domains` must be provided for certificates to be issued. If not,
+dehydrated will still be installed and configured to run but it will exit
+immediately.
 
-Dependencies
-------------
+* `ca`: Must be `$prod_ca` or `$staging_ca`, or a valid Let's Encrypt CA URL. Defaults to `$staging_ca`. Leave this set to `$staging_ca` as you develop so that you don't hit the rate limit cap. Change to `$prod_ca` when you're ready to deploy to production.
+* `certdir`: Directory where cettificates will be output. Defaults to `/opt/ssl`.
+* `contact`: Email address of the Let's Encrypt account.
+* `domains`: Array of RSA certificates to issue. Each element will be an issued certificate. Additional SAN names are space separated.
+* `ecdsa_domains`: Array of ECDSA certificates to issue. Otherwise the same as `domains`.
+* `ecdsa_suffix_domains`: Array of domain *suffixes* for ECDSA cetrificates. I.e., the hostname will be prepended to each name and a certificate generated.
+* `owner`: UNIX file ownership. Defaults to `root:root`. This gets passed to `chown`
+* `restart_services`: Array of services that will be restarted.
+* `suffix_domains`: Array of domain *suffixes* for RSA cetrificates. I.e., the hostname will be prepended to each name and a certificate generated.
+* `well_known`: Let's Encrypt `WELLKNOWN` directory. Defaults to `/var/www/dehydrated`.
 
-A list of other roles hosted on Galaxy should go here, plus any details in regards to parameters that may need to be set for other roles, or variables that are used from other roles.
+Additionally, there are top level `triton_dehydrated_version` and
+`triton_dehydrated_download_url` variables that can be overriden if necessary.
 
-Example Playbook
-----------------
+## Dependencies
 
-Including an example of how to use your role (for instance, with variables passed in as parameters) is always nice for users too:
+This playbook should work on any image published by Joyent and running on
+Triton with CNS names configured to be globally resolvable.
+
+## Example Playbook
 
     - hosts: servers
       roles:
-         - { role: username.rolename, x: 42 }
+        - role: joyent.triton-dehydrated
+      vars:
+        letsencrypt:
+          ca: "$prod_ca"
+          contact: "ssl_admin@example.com"
+          domains:
+            - www.example.com api.backend.example.com
+          restart_services:
+            - nginx
 
-License
--------
+## License
 
-MPL-2
+MPL-2.0. See LICENSE.txt in this repository.
 
-Author Information
-------------------
+## Author Information
 
 Copyright 2021 Joyent, Inc.
