@@ -1,0 +1,3 @@
+.cache
+.py-venv
+yamllint.yaml
