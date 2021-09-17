@@ -7,13 +7,16 @@
 
 - name: Directories exist
   file:
-    path: "{{ item }}"
+    path: "{{ item.name }}"
     state: directory
-    mode: "0755"
+    mode: "{{ item.mode }}"
   loop:
-    - "{{ __letsencrypt.certdir }}"
-    - "{{ __letsencrypt.well_known }}"
-    - /opt/triton-dehydrated
+    - name: "{{ __letsencrypt.certdir }}"
+      mode: "0700"
+    - name: "{{ __letsencrypt.well_known }}"
+      mode: "0755"
+    - name: /opt/triton-dehydrated
+      mode: "0755"
 
 - name: dehydrated install
   unarchive:
