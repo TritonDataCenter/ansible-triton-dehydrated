@@ -5,6 +5,7 @@ le_default:
   certdir: /opt/ssl
   contact: []
   domains: []
+  key_algo: rsa
   suffix_domains: []
   ecdsa_domains: []
   ecdsa_suffix_domains: []

@@ -4,7 +4,7 @@
 
 # Copyright 2021 Joyent, Inc.
 
-KEY_ALGO=rsa
+KEY_ALGO={{ __letsencrypt.key_algo }}
 CERTDIR=/opt/ssl
 prod_ca="https://acme-v02.api.letsencrypt.org/directory"
 staging_ca="https://acme-staging-v02.api.letsencrypt.org/directory"
