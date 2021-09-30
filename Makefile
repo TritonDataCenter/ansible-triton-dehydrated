@@ -15,7 +15,7 @@ yamllint.yaml:
 	curl -LOC - https://raw.githubusercontent.com/ansible/galaxy/devel/galaxy/importer/linters/yamllint.yaml
 
 publish: clean
-	ansible-galaxy role import --token $(cat ~/.ansible-galaxy-api-key) --role-name triton_dehydrated joyent ansible-triton-dehydrated
+	ansible-galaxy role import --token $$(cat ~/.ansible-galaxy-api-key) --role-name triton_dehydrated joyent ansible-triton-dehydrated
 
 clean:
 	rm -rf .py-venv yamllint.yaml
