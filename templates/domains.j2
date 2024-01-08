@@ -1,3 +1,2 @@
-{% for domain in __letsencrypt.domains %}
-{{domain}}
-{%- endfor %}
+{%- for domain in __letsencrypt.domains +%}{{ domain }}
+{% endfor -%}
