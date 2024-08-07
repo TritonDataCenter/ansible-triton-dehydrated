@@ -1,5 +1,5 @@
 ---
 # defaults file for triton-dehydrated
 
-triton_dehydrated_version: 1.5.3
+triton_dehydrated_version: 1.5.4
 triton_dehydrated_download_url: "https://github.com/joyent/triton-dehydrated/releases/download/v{{ triton_dehydrated_version }}/dehydrated.tar.gz"
