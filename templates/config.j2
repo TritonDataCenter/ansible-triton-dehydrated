@@ -3,6 +3,7 @@
 # file, You can obtain one at https://mozilla.org/MPL/2.0/.
 
 # Copyright 2021 Joyent, Inc.
+# Copyright 2024 MNX Cloud, Inc.
 
 KEY_ALGO={{ __letsencrypt.key_algo }}
 CERTDIR=/opt/ssl
@@ -13,3 +14,8 @@ CONTACT_EMAIL={{ __letsencrypt.contact }}
 OWNER={{ __letsencrypt.owner }}
 SERVICES=( {{ __letsencrypt.restart_services | join(' ') }} )
 WELLKNOWN={{ __letsencrypt.well_known }}
+case $CA in
+    $prod_ca) PREFERRED_CHAIN='ISRG Root X1' ;;
+    $staging_ca) PREFERRED_CHAIN='(STAGING) Pretend Pear X1' ;;
+    *) PREFERRED_CHAIN={{ __letsencrypt.preferred_chain|default('') }} ;;
+esac
